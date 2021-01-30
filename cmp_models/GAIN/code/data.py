@@ -124,9 +124,9 @@ class DGLREDataset(IterableDataset):
                         sent_id, (pos0, pos1), ner_type = v['sent_id'], v['global_pos'], v['type']
                         if (pos0, pos1) in already_exist:
                             continue
-                        pos_id[pos0:pos1+1] = idx
-                        ner_id[pos0:pos1+1] = ner2id[ner_type]
-                        mention_id[pos0:pos1+1] = mention_idx
+                        pos_id[pos0:pos1] = idx
+                        ner_id[pos0:pos1] = ner2id[ner_type]
+                        mention_id[pos0:pos1] = mention_idx
                         entity2mention[idx].append(mention_idx)
                         mention_idx += 1
                         already_exist.add((pos0, pos1))

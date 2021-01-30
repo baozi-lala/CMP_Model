@@ -11,7 +11,7 @@ from data.loader import DataLoader, ConfigLoader
 from nnet.trainer import Trainer
 from utils.utils import setup_log, load_model, load_mappings,plot_learning_curve
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def set_seed(seed):
     torch.manual_seed(seed)
@@ -88,14 +88,14 @@ def main():
             break
     if parameters['test']:
         parameters['intrain'] = True
-        parameters['test_data']='../data/DocPRE/processed/dev1_v2.json'
+        parameters['test_data']='../data/DocPRE/processed/dev1_v2.data'
         parameters['save_pred']='dev_test'
         parameters['input_theta']=float(input_theta)
         # parameters['remodelfile']='./results/docpre-dev/docred_basebert_full/'
         _test(parameters)
     if parameters['test']:
         parameters['intrain'] = False
-        parameters['test_data'] = '../data/DocPRE/processed/test1_v2.json'
+        parameters['test_data'] = '../data/DocPRE/processed/test1_v2.data'
         parameters['save_pred'] = 'test'
         parameters['input_theta'] = float(input_theta)
         # parameters['remodelfile'] = './results/docpre-dev/docred_basebert_full/'

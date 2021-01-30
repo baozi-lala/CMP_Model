@@ -26,17 +26,19 @@ class ConfigLoader:
 
         parser.add_argument("--feature", default=str)
 
-        parser.add_argument("--remodelfile", type=str,default='./results/docpre-dev-merge/docred_full-bz32/')
+        parser.add_argument("--remodelfile", type=str,default='./results/docred-dev-merge/docred_full/')
         parser.add_argument('--input_theta', type=float, default=-1)
 
-        parser.add_argument('--config_file', type=str)
-        parser.add_argument('--output_path', type=str, default="dev")
-        parser.add_argument('--test_data', type=str)
-        parser.add_argument('--save_pred', type=str)
+        parser.add_argument('--config_file', type=str,default='../configs/docred_basebert.yaml')
+        parser.add_argument('--output_path', type=str, default='./results/docred-dev-merge/docred_full/')
+        parser.add_argument('--test_data', type=str,default='../data/DocRED/processed/dev1_v2.data')
+        parser.add_argument('--save_pred', type=str,default='dev')
 
-        parser.add_argument('--batch', type=int, help='batch size')
+        parser.add_argument('--batch', type=int, default=8, help='batch size')
         # parser.add_argument()
-        return parser.parse_args()
+
+        parser.add_argument('--CUDA_VISIBLE_DEVICES', type=str, default='0')
+        return parser.parse_args(args=[])
 
     def load_config(self):
         inp = self.load_cmd()
@@ -75,7 +77,7 @@ class DataLoader:
         self.pre_embeds = OrderedDict()
         self.max_distance = -9999999999
         self.singletons = []
-        self.label2ignore = -1
+        self.label2ignore = 0
         self.ign_label = self.params['label2ignore']
         self.dataset = params['dataset']
         if params['dataset'] == "docred":
@@ -85,9 +87,12 @@ class DataLoader:
 
         self.entities_cor_id = None
         if self.params['emb_method']:
-            self.word2index = json.load(open(os.path.join(self.base_file, "word2id.json"),'r', encoding='UTF-8'))
+            self.word2index = json.load(open(os.path.join(self.params['emb_method_file_path'],self.params['emb_method_file']+"_word2id.json"),'r', encoding='UTF-8'))
+            self.word2index['PAD'] = len(self.word2index)  # 添加UNK和BLANK的id
+            self.word2index['UNK'] = len(self.word2index)
+
         else:
-            self.word2index = json.load(open(os.path.join(self.base_file, "word2id_vec.json")))
+            self.word2index = json.load(open(os.path.join(self.params['emb_method_file_path'], self.params['emb_method_file']+"_word2id.json"),'r', encoding='UTF-8'))
         self.index2word = {v: k for k, v in self.word2index.items()}
         self.n_words, self.word2count = len(self.word2index.keys()), {'<UNK>': 1}
 
@@ -101,7 +106,7 @@ class DataLoader:
 
         self.documents, self.entities, self.pairs, self.pronouns_mentions = OrderedDict(), OrderedDict(), OrderedDict(), OrderedDict()
 
-        self.dis2idx_dir = np.zeros((800), dtype='int64') # distance feature
+        self.dis2idx_dir = np.zeros((2000), dtype='int64') # distance feature
         self.dis2idx_dir[1] = 1
         self.dis2idx_dir[2:] = 2
         self.dis2idx_dir[4:] = 3
@@ -180,6 +185,17 @@ class DataLoader:
                 self.type2count[type] = 0
             self.type2count[type] += 1
 
+    def add_dist(self, dist):
+        if dist not in self.dist2index:
+            self.dist2index[dist] = self.n_dist
+            self.dist2count[dist] = 1
+            self.index2dist[self.n_dist] = dist
+            self.n_dist += 1
+        else:
+            if dist not in self.dist2count:
+                self.dist2count[dist] = 0
+            self.dist2count[dist] += 1
+
     def add_sentence(self, sentence):
         for word in sentence:
             self.add_word(word)
@@ -208,6 +224,17 @@ class DataLoader:
                         continue
                     self.add_word(word)
                     self.pre_embeds[word] = np.asarray(vec, 'f')
+        self.add_word('UNK')
+        self.pre_embeds['UNK'] = np.asarray(np.random.normal(size=word_dim, loc=0, scale=0.05), 'f')
+        self.add_word('PAD')
+        self.pre_embeds['PAD'] = np.asarray(np.random.normal(size=word_dim, loc=0, scale=0.05), 'f')
+        # todo 用所有词向量的平均
+        # embed_mean, embed_std = word_embed.mean(), word_embed.std()
+        #
+        # pad_embed = np.random.normal(embed_mean, embed_std,
+        #                              (2, self.word_dim))  # append二维数组[pad,unk],每个300维，值为均值与std
+        # word_embed = np.concatenate((pad_embed, word_embed), axis=0)
+        # word_embed = word_embed.astype(np.float32)
         self.pre_words = [w for w, e in self.pre_embeds.items()]
         print('  Found pre-trained word embeddings: {} x {}'.format(len(self.pre_embeds), word_dim), end="\n")
 

@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
-
+import numpy as np
 from models.basemodel import BaseModel
 from nnet.attention import SelfAttention
 from transformers import *
@@ -39,74 +39,16 @@ class GLRE(BaseModel):
                                    dropout=params['drop_i'])
 
         pretrain_hidden_size = params['lstm_dim'] * 2
-        if 'bert-large' in params['pretrain_l_m'] and 'albert-large-v2' != params['pretrain_l_m']:
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 1024
-            if params['dataset']=='docred' and os.path.exists('./bert_large') \
-                    or params['dataset']=='cdr' and os.path.exists('./biobert_large'):
-                if params['dataset']=='docred':
-                    self.pretrain_lm = BertModel.from_pretrained('./bert_large/')
-                else:
-                    self.pretrain_lm = BertModel.from_pretrained('./biobert_large/')
-            else:
-                self.pretrain_lm = BertModel.from_pretrained('bert-large-uncased-whole-word-masking') # bert-base-uncased
-        elif params['pretrain_l_m'] == 'bert-base' and params['pretrain_l_m']!='albert-base-v2':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 768
-            if params['dataset']=='docred' and os.path.exists('./bert_base') \
-                    or params['dataset']=='cdr' and os.path.exists('./biobert_base'):
-                if params['dataset']=='docred':
-                    self.pretrain_lm = BertModel.from_pretrained('./bert_base/')
-                else:
-                    self.pretrain_lm = BertModel.from_pretrained('./biobert_base/')
-            else:
-                self.pretrain_lm = BertModel.from_pretrained('bert-base-uncased') # bert-base-uncased
-        elif params['pretrain_l_m'] == 'albert-base-v2':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 768
-            self.pretrain_lm = AlbertModel.from_pretrained('albert-base-v2')
-        elif params['pretrain_l_m'] == 'albert-large-v2':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 1024
-            self.pretrain_lm = AlbertModel.from_pretrained('albert-large-v2')
-        elif params['pretrain_l_m'] == 'albert-xlarge-v2':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 2048
-            if os.path.exists('./albert-xlarge-v2/'):
-                self.pretrain_lm = AlbertModel.from_pretrained('./albert-xlarge-v2/')
-            else:
-                self.pretrain_lm = AlbertModel.from_pretrained('albert-xlarge-v2')
-        elif params['pretrain_l_m'] == 'albert-xxlarge-v2':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 4096
-            self.pretrain_lm = AlbertModel.from_pretrained('albert-xxlarge-v2')
-        elif params['pretrain_l_m'] == 'albert-xxlarge-v1':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 4096
-            if os.path.exists('./albert-xxlarge-v1/'):
-                self.pretrain_lm = AlbertModel.from_pretrained('./albert-xxlarge-v1/')
-            else:
-                self.pretrain_lm = AlbertModel.from_pretrained('albert-xxlarge-v1')
-        elif params['pretrain_l_m'] == 'xlnet-large-cased':
-            if self.more_lstm:
-                pretrain_hidden_size = params['lstm_dim']*2
-            else:
-                pretrain_hidden_size = 1024
-            self.pretrain_lm = XLNetModel.from_pretrained('xlnet-large-cased')
+        # if params['pretrain_l_m'] == 'bert-base-chinese' and params['pretrain_l_m']!='albert-base-v2':
+        #     if self.more_lstm:
+        #         pretrain_hidden_size = params['lstm_dim']*2
+        #     else:
+        #         pretrain_hidden_size = 768
+        #     if params['dataset']=='PRE_data' and os.path.exists('./bert-base-chinese'):
+        #         self.pretrain_lm = BertModel.from_pretrained('./bert-base-chinese/')
+        #     else:
+        #         self.pretrain_lm = BertModel.from_pretrained('bert-base-chinese') # bert-base-chinese
+
 
         self.pretrain_l_m_linear_re = nn.Linear(pretrain_hidden_size, params['lstm_dim'])
 

@@ -112,17 +112,18 @@ def plot_learning_curve(trainer, model_folder):
         model_folder (str): folder to save figures
     """
     x = list(map(int, np.arange(len(trainer.train_res['loss']))))
+    x1 = list(map(int, np.arange(len(trainer.train_res['loss'])-len(trainer.test_res['loss']),len(trainer.train_res['loss']))))
     fig = plt.figure()
     plt.subplot(2, 1, 1)
     plt.plot(x, trainer.train_res['loss'], 'b', label='train')
-    plt.plot(x, trainer.test_res['loss'], 'g', label='test')
+    plt.plot(x1, trainer.test_res['loss'], 'g', label='test')
     plt.legend()
     plt.ylabel('Loss')
     plt.yticks(np.arange(0, 1, 0.1))
 
     plt.subplot(2, 1, 2)
     plt.plot(x, trainer.train_res['score'], 'b', label='train')
-    plt.plot(x, trainer.test_res['score'], 'g', label='test')
+    plt.plot(x1, trainer.test_res['score'], 'g', label='test')
     plt.legend()
     plt.ylabel('F1-score')
     plt.xlabel('Epochs')

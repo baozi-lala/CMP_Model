@@ -18,7 +18,7 @@ import json
 # for ablation
 # from models.GAIN_nomention import GAIN_GloVe, GAIN_BERT
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train(opt):
@@ -44,7 +44,7 @@ def train(opt):
                                instance_in_train=train_set.instance_in_train, opt=opt)
 
         # dataloaders
-        train_loader = DGLREDataloader(train_set, batch_size=opt.batch_size, shuffle=True,
+        train_loader = DGLREDataloader(train_set, batch_size=opt.batch_size, shuffle=False,
                                        negativa_alpha=opt.negativa_alpha)
         dev_loader = DGLREDataloader(dev_set, batch_size=opt.test_batch_size, dataset_type='dev')
 
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     opt.use_model = "bilstm"
     opt.model_name = "GAIN_GloVe"
     opt.lr = 0.001
-    opt.batch_size = 32
+    opt.batch_size = 8
     opt.test_batch_size=16
     opt.epoch = 50
     opt.test_epoch = 5
@@ -246,8 +246,8 @@ if __name__ == '__main__':
     opt.gcn_dim = 512
     opt.gcn_layers = 2
     opt.lstm_hidden_size = 256
-    opt.use_entity_type = False
-    opt.use_entity_id = False
+    opt.use_entity_type = True
+    opt.use_entity_id = True
 
     opt.word_emb_size = 300
     opt.finetune_word = True

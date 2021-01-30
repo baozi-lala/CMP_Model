@@ -1,5 +1,5 @@
 #! /bin/bash
-export CUDA_VISIBLE_DEVICES=$1
+export CUDA_VISIBLE_DEVICES=$2
 
 # -------------------GAIN_GloVe Training Shell Script--------------------
 
@@ -7,7 +7,7 @@ model_name=GAIN_GloVe
 lr=0.001
 batch_size=32
 test_batch_size=16
-epoch=300
+epoch=50
 test_epoch=5
 log_step=20
 save_model_freq=3
@@ -16,11 +16,11 @@ weight_decay=0.0001
 
   python3 -u train.py \
   --train_set ../data/train_annotated.json \
-  --train_set_save ../data/prepro_data/train_GloVe.pkl \
+  --train_set_save ../data/prepro_data/train_merge.pkl \
   --dev_set ../data/dev.json \
-  --dev_set_save ../data/prepro_data/dev_GloVe.pkl \
+  --dev_set_save ../data/prepro_data/dev_merge.pkl \
   --test_set ../data/test.json \
-  --test_set_save ../data/prepro_data/test_GloVe.pkl \
+  --test_set_save ../data/prepro_data/test_mergee.pkl \
   --use_model bilstm \
   --model_name ${model_name} \
   --lr ${lr} \
@@ -36,7 +36,7 @@ weight_decay=0.0001
   --lstm_hidden_size 256 \
   --use_entity_type \
   --use_entity_id \
-  --word_emb_size 100 \
+  --word_emb_size 300 \
   --finetune_word \
   --pre_train_word \
   --dropout 0.6 \

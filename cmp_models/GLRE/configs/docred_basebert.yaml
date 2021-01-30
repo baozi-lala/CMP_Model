@@ -8,11 +8,13 @@ context_att: true
 query: global # global
 
 pretrain_l_m:  none # tx, bert-base-chinese,bert-base,chinese, none,xlnet-base, xlnet-large
-lstm_encoder: false
+lstm_encoder: true
 more_lstm: false
 
 # encoder
 emb_method: true # true for load_embeds
+emb_method_file: merge
+emb_method_file_path: ../data/DocRED/processed/
 word_dim: 300
 lstm_dim: 256
 out_dim: 256
@@ -50,8 +52,8 @@ mlp_dim: 512
 # data based
 train_data: ../data/DocRED/processed/train1_v2.data
 test_data: ../data/DocRED/processed/dev1_v2.data
-embeds: ../data/DocPRE/sgns.merge.word
-folder: ../results/docred-dev
+embeds: ../data/DocRED/sgns.merge.word
+folder: ./results/docred-dev-merge
 save_pred: dev
 
 # options (chosen from parse input otherwise false)

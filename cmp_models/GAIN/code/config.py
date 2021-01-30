@@ -21,7 +21,7 @@ def get_opt():
     parser = argparse.ArgumentParser()
 
     # datasets path
-    parser.add_argument('--train_set', type=str, default=os.path.join(data_dir, 'train1_v2.json'))
+    parser.add_argument('--train_set', type=str, default=os.path.join(data_dir, 'test1_v2.json'))
     parser.add_argument('--dev_set', type=str, default=os.path.join(data_dir, 'dev1_v2.json'))
     parser.add_argument('--test_set', type=str, default=os.path.join(data_dir, 'test1_v2.json'))
 

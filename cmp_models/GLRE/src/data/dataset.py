@@ -23,17 +23,17 @@ class DocRelationDataset:
         self.data = []
         self.lowercase = params['lowercase']
         self.prune_recall = {"0-max":0, "0-1":0, "0-3":0, "1-3":0, "1-max":0, "3-max":0}
-        if 'bert-large' in params['pretrain_l_m'] and 'albert' not in params['pretrain_l_m']:
-            self.bert = transformers_word_handle("bert", 'bert-large-uncased-whole-word-masking', dataset=params['dataset'])
-        elif 'bert-base' in params['pretrain_l_m'] and 'albert' not in params['pretrain_l_m']:
-            self.bert = transformers_word_handle("bert", 'bert-base-uncased', dataset=params['dataset'])
-        elif 'albert' in params['pretrain_l_m']:
-            self.bert = transformers_word_handle('albert', params['pretrain_l_m'], dataset=params['dataset'])
-        elif 'xlnet' in params['pretrain_l_m']:
-            self.bert = transformers_word_handle('xlnet', params['pretrain_l_m'], dataset=params['dataset'])
-        else:
-            print('bert init error')
-            exit(0)
+        # if 'bert-large' in params['pretrain_l_m'] and 'albert' not in params['pretrain_l_m']:
+        #     self.bert = transformers_word_handle("bert", 'bert-large-uncased-whole-word-masking', dataset=params['dataset'])
+        # elif 'bert-base-chinese' in params['pretrain_l_m'] and 'albert' not in params['pretrain_l_m']:
+        #     self.bert = transformers_word_handle("bert", 'bert-base-chinese', dataset=params['dataset'])
+        # elif 'albert' in params['pretrain_l_m']:
+        #     self.bert = transformers_word_handle('albert', params['pretrain_l_m'], dataset=params['dataset'])
+        # elif 'xlnet' in params['pretrain_l_m']:
+        #     self.bert = transformers_word_handle('xlnet', params['pretrain_l_m'], dataset=params['dataset'])
+        # else:
+        #     print('bert init error')
+        #     exit(0)
 
     def __len__(self):
         return len(self.data)
@@ -79,8 +79,9 @@ class DocRelationDataset:
                 assert len(sentence) == len(sent), '{}, {}'.format(len(sentence), len(sent))
                 doc += [sent]
                 sens_len.append(len(sent))
-
-            bert_token, bert_mask, bert_starts = self.bert.subword_tokenize_to_ids(words)
+            # todo 先把bert部分删掉
+            # bert_token, bert_mask, bert_starts = self.bert.subword_tokenize_to_ids(words)
+            bert_token, bert_mask, bert_starts =[],[],[]
 
             # NER
             ner = [0] * sum(sens_len)
@@ -132,7 +133,7 @@ class DocRelationDataset:
                 for i in ii:
                     assert relation_multi_label[ents_keys.index(r[0]), ents_keys.index(r[1]), self.mappings.rel2index[i.type]] != 1.0
                     relation_multi_label[ents_keys.index(r[0]), ents_keys.index(r[1]), self.mappings.rel2index[i.type]] = 1.0
-                    assert self.loader.ign_label == "NA" or self.loader.ign_label == "1:NR:2"
+                    assert self.loader.ign_label == "unknown" or self.loader.ign_label == "1:NR:2"
                     if i.type != self.loader.ign_label:
                         assert relation_multi_label[ents_keys.index(r[0]), ents_keys.index(r[1]), self.mappings.rel2index[self.loader.ign_label]] != 1.0
                     relation_set.add(self.mappings.rel2index[i.type])

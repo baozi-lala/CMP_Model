@@ -77,9 +77,9 @@ class BaseModel(nn.Module):
         mentions = []
         for i in range(info.shape[0]):
             if type == "max":
-                mention = torch.max(enc_seq[info[i, 2]: info[i, 3], :], dim=-2)[0]
+                mention = torch.max(enc_seq[info[i, 2]: info[i, 3]+1, :], dim=-2)[0]
             else:  # mean
-                mention = torch.mean(enc_seq[info[i, 2]: info[i, 3], :], dim=-2)
+                mention = torch.mean(enc_seq[info[i, 2]: info[i, 3]+1, :], dim=-2)
             mentions.append(mention)
         mentions = torch.stack(mentions)
         return mentions
