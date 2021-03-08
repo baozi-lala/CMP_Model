@@ -67,7 +67,7 @@ freeze_words: true
 # extra
 seed: 0
 shuffle_data: true
-label2ignore: unknown
+label2ignore: NA
 primary_metric: micro_f
 direction: l2r+r2l
 gpu: 0

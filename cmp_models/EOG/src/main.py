@@ -51,7 +51,7 @@ def train(parameters):
     ###################################
     # Training
     ###################################
-    trainer = Trainer(train_loader, parameters, {'train': train_data, 'test': test_data}, model_folder)
+    trainer = Trainer(train_loader, parameters, {'train': train_data, 'test': test_data}, model_folder, prune_recall)
 
     if parameters['re_train']:
         trainer = load_model(parameters['remodelfile'], trainer)
@@ -75,7 +75,7 @@ def _test(parameters):
     test_loader(parameters=parameters)
     test_data, prune_recall = DocRelationDataset(test_loader, 'test', parameters, train_loader).__call__()
 
-    m = Trainer(train_loader, parameters, {'train': [], 'test': test_data}, model_folder)
+    m = Trainer(train_loader, parameters, {'train': [], 'test': test_data}, model_folder, prune_recall)
     trainer = load_model(parameters['remodelfile'], m)
     trainer.eval_epoch(final=True, save_predictions=True)
 

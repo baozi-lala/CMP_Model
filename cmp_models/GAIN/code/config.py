@@ -16,12 +16,11 @@ ner2id = json.load(open(os.path.join(data_dir, 'ner2id.json'), "r",encoding="utf
 
 word2vec = np.load(os.path.join(data_dir, 'merge_vec.npy'))
 
-
 def get_opt():
     parser = argparse.ArgumentParser()
 
     # datasets path
-    parser.add_argument('--train_set', type=str, default=os.path.join(data_dir, 'test1_v2.json'))
+    parser.add_argument('--train_set', type=str, default=os.path.join(data_dir, 'train1_v2.json'))
     parser.add_argument('--dev_set', type=str, default=os.path.join(data_dir, 'dev1_v2.json'))
     parser.add_argument('--test_set', type=str, default=os.path.join(data_dir, 'test1_v2.json'))
 
@@ -37,7 +36,7 @@ def get_opt():
     parser.add_argument('--pretrain_model', type=str, default='')
 
     # task/Dataset-related
-    parser.add_argument('--vocabulary_size', type=int, default=1292609)
+    parser.add_argument('--vocabulary_size', type=int, default=1300000)
     parser.add_argument('--relation_nums', type=int, default=17)
     parser.add_argument('--entity_type_num', type=int, default=7)
     parser.add_argument('--max_entity_num', type=int, default=80)

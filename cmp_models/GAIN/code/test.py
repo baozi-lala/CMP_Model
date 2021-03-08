@@ -5,15 +5,22 @@ from config import *
 from data import DGLREDataset, DGLREDataloader, BERTDGLREDataset
 from models.GAIN import GAIN_GloVe, GAIN_BERT
 from utils import get_cuda, logging, print_params
-
+import os
+import json
 
 # for ablation
 # from models.GCNRE_nomention import GAIN_GloVe, GAIN_BERT
 
 
 def test(model, dataloader, modelname, id2rel, input_theta=-1, output=False, is_test=False, test_prefix='dev',
-         relation_num=97, ours=False):
+         relation_num=17, ours=False):
     # ours: inter-sentence F1 in LSR
+    def loggings(s, print_=True, log_=True):
+        if print_:
+            print(s)
+        if log_:
+            with open(os.path.join(os.path.join("logs", model_name)), 'a+') as f_log:
+                f_log.write(s + '\n')
 
     total_recall_ignore = 0
 
@@ -113,9 +120,10 @@ def test(model, dataloader, modelname, id2rel, input_theta=-1, output=False, is_
 
     auc = sklearn.metrics.auc(x=pr_x, y=pr_y)
     if not is_test:
-        logging('ALL  : Theta {:3.4f} | F1 {:3.4f} | AUC {:3.4f}'.format(theta, f1, auc))
+        loggings('ALL  : Theta {:3.4f} | F1 {:3.4f} | AUC {:3.4f} | P {:3.4f} | R {:3.4f}'.format(input_theta, f1_arr[w],
+                                                                                                auc, pr_y[w], pr_x[w]))
     else:
-        logging(
+        loggings(
             'ma_f1 {:3.4f} | input_theta {:3.4f} test_result P {:3.4f} test_result R {:3.4f} test_result F1 {:3.4f} | AUC {:3.4f}' \
                 .format(f1, input_theta, pr_y[w], pr_x[w], f1_arr[w], auc))
 
@@ -153,7 +161,7 @@ def test(model, dataloader, modelname, id2rel, input_theta=-1, output=False, is_
 
     auc = sklearn.metrics.auc(x=pr_x, y=pr_y)
 
-    logging(
+    loggings(
         'Ignore ma_f1 {:3.4f} | inhput_theta {:3.4f} test_result P {:3.4f} test_result R {:3.4f} test_result F1 {:3.4f} | AUC {:3.4f}' \
             .format(f1, input_theta, pr_y[w], pr_x[w], f1_arr[w], auc))
 
@@ -164,6 +172,28 @@ if __name__ == '__main__':
     print('processId:', os.getpid())
     print('prarent processId:', os.getppid())
     opt = get_opt()
+
+    opt.train_set_save = "../data/prepro_data/train_merge.pkl"
+    opt.dev_set_save = "../data/prepro_data/dev_merge.pkl"
+    opt.test_set_save = "../data/prepro_data/test_merge.pkl"
+    opt.use_model = "bilstm"
+    opt.model_name = "GAIN_GloVe"
+    opt.pretrain_model="checkpoint / GAIN_GloVe_best.pt"
+    opt.batch_size = 8
+    opt.test_batch_size = 16
+
+    opt.gcn_dim = 512
+    opt.gcn_layers = 2
+    opt.lstm_hidden_size = 256
+    opt.use_entity_type = True
+    opt.use_entity_id = True
+
+    opt.word_emb_size = 300
+    opt.finetune_word = True
+    opt.pre_train_word = True
+    opt.dropout = 0.6
+    opt.activation = "relu"
+    opt.input_theta = 0.0001
     print(json.dumps(opt.__dict__, indent=4))
     opt.data_word_vec = word2vec
 
@@ -206,7 +236,7 @@ if __name__ == '__main__':
     if pretrain_model != '':
         chkpt = torch.load(pretrain_model, map_location=torch.device('cpu'))
         model.load_state_dict(chkpt['checkpoint'])
-        logging('load checkpoint from {}'.format(pretrain_model))
+        loggings('load checkpoint from {}'.format(pretrain_model))
     else:
         assert 1 == 2, 'please provide checkpoint to evaluate.'
 
@@ -216,3 +246,4 @@ if __name__ == '__main__':
     f1, auc, pr_x, pr_y = test(model, test_loader, model_name, id2rel=id2rel,
                                input_theta=opt.input_theta, output=True, test_prefix='test', is_test=True, ours=False)
     print('finished')
+    print(f1, auc, pr_x, pr_y)

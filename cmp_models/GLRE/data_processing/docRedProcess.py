@@ -137,6 +137,6 @@ def find_cross(head, tail):
         return 'CROSS'
 
 if __name__ == '__main__':
-    main('../data/DocRED/train1_v2.json', '../data/DocRED/processed/train1_v2.data', suffix='_train')
-    main('../data/DocRED/dev1_v2.json', '../data/DocRED/processed/dev1_v2.data', suffix='_dev')
-    main('../data/DocRED/test1_v2.json', '../data/DocRED/processed/test1_v2.data', suffix='_test')
+    main('../data/DocRED/train1_v3.json', '../data/DocRED/processed/train1_v2.data', suffix='_train')
+    main('../data/DocRED/dev1_v3.json', '../data/DocRED/processed/dev1_v2.data', suffix='_dev')
+    main('../data/DocRED/test1_v3.json', '../data/DocRED/processed/test1_v2.data', suffix='_test')

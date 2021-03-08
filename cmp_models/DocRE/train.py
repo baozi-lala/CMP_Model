@@ -31,12 +31,13 @@ model = {
 }
 
 con = Config(args)
-con.set_max_epoch(86)
+con.set_max_epoch(50)
 con.load_train_data()
 con.load_test_data()
 # con.set_train_model()
 model_name=['CNN3','BiLSTM','LSTM','ContextAware']
-for name in model_name:
-    print("---------",name,"------------")
-    con.train(model[name], args.save_name)
-    print("over")
+name='BiLSTM'
+# for name in model_name:
+print("---------",name,"------------")
+con.train(model[name], args.save_name)
+print("over")

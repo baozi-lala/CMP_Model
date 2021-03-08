@@ -51,12 +51,12 @@ class Config(object):
         self.use_gpu = True
         self.cuda = True
         self.is_training = True
-        self.max_length = 512
+        self.max_length = 1300
         self.max_sen_cnt = 36  # 每篇文档包含最长句子个数
         self.max_sen_length = 200  # 最大句子长度
         self.pos_num = 2 * self.max_length
         self.entity_num = self.max_length
-        self.relation_num = 17 # 关系个数
+        self.relation_num = 16 # 关系个数
         self.word_dim = 300  # 词嵌入
         # self.coref_size = 20
         # self.entity_type_size = 20
@@ -95,7 +95,7 @@ class Config(object):
         self.test_relation_limit = 1800
         self.char_limit = 16
         self.sent_limit = 25
-        self.dis2idx = np.zeros((512), dtype='int64')
+        self.dis2idx = np.zeros((1300), dtype='int64')
         self.dis2idx[1] = 1
         self.dis2idx[2:] = 2
         self.dis2idx[4:] = 3
@@ -113,7 +113,7 @@ class Config(object):
         if not os.path.exists("log"):
             os.mkdir("log")
         # 把索引和词向量对应起来
-        self.data_word_vec = np.load(os.path.join(self.data_path, 'vec.npy'))
+        self.data_word_vec = np.load(os.path.join(self.data_path, 'merge_vec.npy'))
         self.data_word_vec = np.concatenate(
             (self.data_word_vec, np.asarray(np.random.normal(size=300, loc=0, scale=0.05), 'f').reshape(1, 300)))
         self.data_word_vec = np.concatenate(

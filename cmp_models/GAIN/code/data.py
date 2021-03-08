@@ -11,7 +11,6 @@ import torch
 from torch.utils.data import IterableDataset, DataLoader
 from transformers import *
 
-from models.GAIN import Bert
 from utils import get_cuda
 
 IGNORE_INDEX = -100
@@ -34,7 +33,7 @@ class DGLREDataset(IterableDataset):
         self.count = 0
 
         print('Reading data from {}.'.format(src_file))
-        if os.path.exists(save_file):
+        # if os.path.exists(save_file):
         #     with open(file=save_file, mode='rb') as fr:
         #         info = pickle.load(fr)
         #         self.data = info['data']
@@ -42,8 +41,8 @@ class DGLREDataset(IterableDataset):
         #     print('load preprocessed data from {}.'.format(save_file))
         #
         # else:
-            with open(file=src_file, mode='r', encoding='utf-8') as fr:
-                ori_data = json.load(fr)
+        with open(file=src_file, mode='r', encoding='utf-8') as fr:
+            ori_data = json.load(fr)
             print('loading..')
             self.data = []
 
@@ -113,7 +112,7 @@ class DGLREDataset(IterableDataset):
                 mention_id = np.zeros((self.document_max_length,), dtype=np.int32)
 
                 for iii, w in enumerate(words):
-                    word = word2id.get(w.lower(), word2id['UNK'])
+                    word = word2id.get(w, word2id['UNK'])
                     word_id[iii] = word
 
                 entity2mention = defaultdict(list)
@@ -273,7 +272,7 @@ class BERTDGLREDataset(IterableDataset):
         # record training set mention triples
         self.instance_in_train = set([]) if instance_in_train is None else instance_in_train
         self.data = None
-        self.document_max_length = 512
+        self.document_max_length = 1500
         self.INFRA_EDGE = 0
         self.INTER_EDGE = 1
         self.LOOP_EDGE = 2

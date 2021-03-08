@@ -26,11 +26,11 @@ class ConfigLoader:
 
         parser.add_argument("--feature", default=str)
 
-        parser.add_argument("--remodelfile", type=str,default='./results/docred-dev-merge/docred_full/')
+        parser.add_argument("--remodelfile", type=str,default='./results/docred-dev-merge/docred_full-1/')
         parser.add_argument('--input_theta', type=float, default=-1)
 
         parser.add_argument('--config_file', type=str,default='../configs/docred_basebert.yaml')
-        parser.add_argument('--output_path', type=str, default='./results/docred-dev-merge/docred_full/')
+        parser.add_argument('--output_path', type=str, default='./results/docred-dev-merge/docred_full-1/')
         parser.add_argument('--test_data', type=str,default='../data/DocRED/processed/dev1_v2.data')
         parser.add_argument('--save_pred', type=str,default='dev')
 

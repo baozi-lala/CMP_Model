@@ -28,9 +28,9 @@ case_sensitive = False
 
 char_limit = 16
 # train_distant_file_name = os.path.join(in_path, 'train_distant.json')
-train_annotated_file_name = os.path.join(in_path, 'train1_v2.json')
-dev_file_name = os.path.join(in_path, 'dev1_v2.json')
-test_file_name = os.path.join(in_path, 'test1_v2.json')
+train_annotated_file_name = os.path.join(in_path, 'train1_v3.json')
+dev_file_name = os.path.join(in_path, 'dev1_v3.json')
+test_file_name = os.path.join(in_path, 'test1_v3.json')
 
 rel2id = json.load(open(os.path.join(out_path, 'rel2id.json'), "r"), encoding='UTF-8')
 id2rel = {v: u for u, v in rel2id.items()}
@@ -100,7 +100,7 @@ def convertjson(data_file_name):
 # convertjson(test_file_name)
 
 # 对原始数据进行token index 替换操作，获取句子依赖解析结果
-def init(data_file_name, rel2id, max_length=512, max_sen_length_init=200, max_sen_cnt_init=36, is_training=True,
+def init(data_file_name, rel2id, max_length=1300, max_sen_length_init=200, max_sen_cnt_init=36, is_training=True,
          suffix=''):
     """
 
@@ -240,7 +240,7 @@ def init(data_file_name, rel2id, max_length=512, max_sen_length_init=200, max_se
     # id2char= {v:k for k,v in char2id.items()}
     # json.dump(id2char, open("data/id2char.json", "w"))
 
-    word2id = json.load(open(os.path.join(out_path, "baidubaike_word2id.json")))
+    word2id = json.load(open(os.path.join(out_path, "merge_word2id.json")))
     word2id['PAD'] = len(word2id)  # 添加UNK和BLANK的id
     word2id['UNK'] = len(word2id)
     # ner2id = json.load(open(os.path.join(out_path, "ner2id.json")))
@@ -313,7 +313,7 @@ def get_sen_word_entity(is_training=True, suffix='', max_entity_cnt_init=43):
         name_prefix = "dev"
     entity2id = json.load(open("./prepro_data/entity2id.json"))
 
-    word2id = json.load(open(os.path.join("./prepro_data", 'word2id.json')))
+    word2id = json.load(open(os.path.join("./prepro_data", 'merge_word2id.json')))
     wordlens = len(word2id)
 
     sen_word = np.load(os.path.join(out_path, name_prefix + suffix + '_word.npy'))
@@ -528,9 +528,9 @@ def get_entity_graph_adj(is_training=True, suffix='', max_entity_mention_init=90
 
 try:
     # init(train_distant_file_name, rel2id, max_length=512, is_training=True, suffix='')
-    init(train_annotated_file_name, rel2id, max_length=512, is_training=False, suffix='_train')
-    init(dev_file_name, rel2id, max_length=512, is_training=False, suffix='_dev')
-    init(test_file_name, rel2id, max_length=512, is_training=False, suffix='_test')
+    init(train_annotated_file_name, rel2id, max_length=1300, is_training=False, suffix='_train')
+    init(dev_file_name, rel2id, max_length=1300, is_training=False, suffix='_dev')
+    init(test_file_name, rel2id, max_length=1300, is_training=False, suffix='_test')
     # get_sen_word_entity(is_training=False, suffix='_train')
     # get_sen_word_entity(is_training=False, suffix='_dev')
     # get_sen_word_entity(is_training=False, suffix='_test')

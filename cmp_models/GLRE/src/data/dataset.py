@@ -133,7 +133,7 @@ class DocRelationDataset:
                 for i in ii:
                     assert relation_multi_label[ents_keys.index(r[0]), ents_keys.index(r[1]), self.mappings.rel2index[i.type]] != 1.0
                     relation_multi_label[ents_keys.index(r[0]), ents_keys.index(r[1]), self.mappings.rel2index[i.type]] = 1.0
-                    assert self.loader.ign_label == "unknown" or self.loader.ign_label == "1:NR:2"
+                    assert self.loader.ign_label == "NA" or self.loader.ign_label == "1:NR:2"
                     if i.type != self.loader.ign_label:
                         assert relation_multi_label[ents_keys.index(r[0]), ents_keys.index(r[1]), self.mappings.rel2index[self.loader.ign_label]] != 1.0
                     relation_set.add(self.mappings.rel2index[i.type])

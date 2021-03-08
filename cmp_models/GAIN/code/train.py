@@ -22,6 +22,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train(opt):
+    def loggings(s, print_=True, log_=True):
+        if print_:
+            print(s)
+        if log_:
+            with open(os.path.join(os.path.join("logs", model_name)), 'a+') as f_log:
+                f_log.write(s + '\n')
     if opt.use_model == 'bert':
         # datasets
         train_set = BERTDGLREDataset(opt.train_set, opt.train_set_save, word2id, ner2id, rel2id, dataset_type='train',
@@ -63,12 +69,12 @@ def train(opt):
     if pretrain_model != '':
         chkpt = torch.load(pretrain_model, map_location=torch.device('cpu'))
         model.load_state_dict(chkpt['checkpoint'])
-        logging('load model from {}'.format(pretrain_model))
+        loggings('load model from {}'.format(pretrain_model))
         start_epoch = chkpt['epoch'] + 1
         lr = chkpt['lr']
-        logging('resume from epoch {} with lr {}'.format(start_epoch, lr))
+        loggings('resume from epoch {} with lr {}'.format(start_epoch, lr))
     else:
-        logging('training from scratch with lr {}'.format(lr))
+        loggings('training from scratch with lr {}'.format(lr))
 
     model = get_cuda(model)
 
@@ -112,8 +118,9 @@ def train(opt):
     plt.title('Precision-Recall')
     plt.grid(True)
 
+
     acc_NA, acc_not_NA, acc_total = Accuracy(), Accuracy(), Accuracy()
-    logging('begin..')
+    loggings('begin..')
 
     for epoch in range(start_epoch, opt.epoch + 1):
         start_time = time.time()
@@ -124,7 +131,6 @@ def train(opt):
             relation_multi_label = d['relation_multi_label']
             relation_mask = d['relation_mask']
             relation_label = d['relation_label']
-            print(ii)
 
             predictions = model(words=d['context_idxs'],
                                 src_lengths=d['context_word_length'],
@@ -178,7 +184,7 @@ def train(opt):
             if global_step % log_step == 0:
                 cur_loss = total_loss / log_step
                 elapsed = time.time() - start_time
-                logging(
+                loggings(
                     '| epoch {:2d} | step {:4d} |  ms/b {:5.2f} | train loss {:5.3f} | NA acc: {:4.2f} | not NA acc: {:4.2f}  | tot acc: {:4.2f} '.format(
                         epoch, global_step, elapsed * 1000 / log_step, cur_loss * 1000, acc_NA.get(), acc_not_NA.get(),
                         acc_total.get()))
@@ -186,13 +192,13 @@ def train(opt):
                 start_time = time.time()
 
         if epoch % opt.test_epoch == 0:
-            logging('-' * 89)
+            loggings('-' * 89)
             eval_start_time = time.time()
             model.eval()
             ign_f1, ign_auc, pr_x, pr_y = test(model, dev_loader, model_name, id2rel=id2rel)
             model.train()
-            logging('| epoch {:3d} | time: {:5.2f}s'.format(epoch, time.time() - eval_start_time))
-            logging('-' * 89)
+            loggings('| epoch {:3d} | time: {:5.2f}s'.format(epoch, time.time() - eval_start_time))
+            loggings('-' * 89)
 
             if ign_f1 > best_ign_f1:
                 best_ign_f1 = ign_f1
